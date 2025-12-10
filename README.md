@@ -116,7 +116,7 @@ Reported Subscriptions: 150
 Unique Applications: 5
 ================================================================================
 
-📱 Application: Teams Recording Bot
+ Application: Teams Recording Bot
    App ID: 12345678-1234-1234-1234-123456789abc
    Service Principal ID: 87654321-4321-4321-4321-cba987654321
    Subscription Count: 45
