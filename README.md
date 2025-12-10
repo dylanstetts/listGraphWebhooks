@@ -85,21 +85,21 @@ The Microsoft Graph subscriptions API has limitations:
    - Add:
      - `Subscription.Read.All`
      - `Application.Read.All`
+   - Click **Grant admin consent** for your organization
+
+## Usage
+
 Run the analyzer:
 
 ```bash
 python subscription_analyzer.py
-``` the analyzer:
+```
 
 ### What Happens:
 
 1. **Authentication**: Browser window opens for you to sign in with Global Admin account
 2. **Fetching**: Tool retrieves all subscription pages across your tenant
 3. **Analysis**: Identifies all subscriptions and separately tracks callTranscript resources
-4. **Mapping**: Resolves application IDs to display names
-5. **Reporting**: Outputs to console and JSON fileu to sign in with Global Admin account
-2. **Fetching**: Tool retrieves all subscription pages
-3. **Filtering**: Identifies callTranscript-related subscriptions
 4. **Mapping**: Resolves application IDs to display names
 5. **Reporting**: Outputs to console and JSON file
 
