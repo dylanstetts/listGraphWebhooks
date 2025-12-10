@@ -1,0 +1,30 @@
+# Add .env file to gitignore
+.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Reports
+subscription_report_*.json
+
+# OS
+.DS_Store
+Thumbs.db
