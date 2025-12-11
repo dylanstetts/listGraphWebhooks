@@ -193,7 +193,7 @@ class GraphSubscriptionAnalyzer:
             page_count += 1
             print(f"Fetching page {page_count}...", end=" ")
             
-            response = requests.get(url, headers=headers)
+            response = self._make_graph_request_with_retry(url, headers)
             
             if response.status_code != 200:
                 raise Exception(f"Failed to fetch subscriptions: {response.status_code} - {response.text}")
