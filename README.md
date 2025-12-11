@@ -2,6 +2,8 @@
 
 A Python tool to identify which applications are creating Microsoft Graph subscriptions in your tenant. This tool helps resolve subscription quota issues and provides visibility into subscription ownership across all resources.
 
+> ** PowerShell Version Available!** If you prefer PowerShell, see [`Get-GraphSubscriptions.ps1`](./Get-GraphSubscriptions.ps1) - a standalone script with all functionality in a single file. [Documentation](./POWERSHELL.md)
+
 ## Problem Statement
 
 When managing Microsoft Graph subscriptions (webhooks), you may encounter:
@@ -13,16 +15,16 @@ The Microsoft Graph subscriptions API has limitations:
 - Only returns paginated results
 - Doesn't support OData query parameters for filtering
 - Doesn't directly show app ownership details
+
+This tool solves these problems by providing complete visibility into all subscriptions and their owning applications.
+
+## Features
+
 -  **Delegated Authentication**: Uses interactive browser login with Global Admin account
 -  **Full Pagination Support**: Automatically retrieves all subscription pages
 -  **Application Mapping**: Resolves `applicationId` to app display names
 -  **Complete Coverage**: Lists all Graph subscriptions across all resources
 -  **Transcript Tracking**: Separately identifies callTranscript subscriptions
--  **Detailed Reporting**: Outputs both console and JSON reports
--  **Token Caching**: Reuses cached tokens for efficiency login with Global Admin account
--  **Full Pagination Support**: Automatically retrieves all subscription pages
--  **Application Mapping**: Resolves `applicationId` to app display names
--  **Transcript Filtering**: Identifies subscriptions for callTranscript resources
 -  **Detailed Reporting**: Outputs both console and JSON reports
 -  **Token Caching**: Reuses cached tokens for efficiency
 
@@ -38,6 +40,7 @@ The Microsoft Graph subscriptions API has limitations:
    - Have a **Global Admin** account to sign in with
 
 2. **Python 3.8+** installed
+
 ## Setup
 
 1. **Clone this repository**:
