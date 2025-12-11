@@ -4,13 +4,13 @@ A standalone PowerShell script version of the Microsoft Graph Subscription Analy
 
 ## Features
 
-- ✅ **Standalone Script**: Everything in a single `.ps1` file
-- ✅ **Auto-Install Dependencies**: Automatically installs MSAL.PS module if missing
-- ✅ **Interactive Authentication**: Browser-based login with delegated permissions
-- ✅ **Full Pagination Support**: Retrieves all subscriptions across all pages
-- ✅ **Application Mapping**: Resolves application IDs to display names
-- ✅ **Optional Filtering**: Can filter to show only callTranscript subscriptions
-- ✅ **Dual Output**: Console display and JSON file export
+- **Standalone Script**: Everything in a single `.ps1` file
+- **Auto-Install Dependencies**: Automatically installs MSAL.PS module if missing
+- **Interactive Authentication**: Browser-based login with delegated permissions
+- **Full Pagination Support**: Retrieves all subscriptions across all pages
+- **Application Mapping**: Resolves application IDs to display names
+- **Optional Filtering**: Can filter to show only callTranscript subscriptions
+- **Dual Output**: Console display and JSON file export
 
 ## Prerequisites
 
@@ -98,7 +98,7 @@ Reported Subscriptions: 150
 Unique Applications: 5
 ================================================================================
 
-📱 Application: Teams Recording Bot
+Application: Teams Recording Bot
    App ID: 12345678-1234-1234-1234-123456789abc
    Service Principal ID: 87654321-4321-4321-4321-cba987654321
    Subscription Count: 45
@@ -139,7 +139,7 @@ Install-Module -Name MSAL.PS -Scope CurrentUser -Force
 
 | Feature | PowerShell | Python |
 |---------|-----------|--------|
-| Single file | ✅ Yes | ❌ No (+ requirements.txt, .env) |
+| Single file |  Yes |  No (+ requirements.txt, .env) |
 | Dependencies | MSAL.PS (auto-install) | msal, requests, python-dotenv |
 | Configuration | Command-line parameters | .env file |
 | Platform | Windows (native) | Cross-platform |

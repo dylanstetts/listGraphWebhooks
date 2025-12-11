@@ -109,7 +109,7 @@ function Get-GraphAccessToken {
             -Interactive `
             -ErrorAction Stop
         
-        Write-Host "✓ Authentication successful" -ForegroundColor Green
+        Write-Host " Authentication successful" -ForegroundColor Green
         return $token.AccessToken
     }
     catch {
@@ -403,11 +403,11 @@ function Main {
         # Save JSON report
         Save-JsonReport -Report $report -OutputPath $OutputPath
         
-        Write-Host "`n✓ Analysis complete!" -ForegroundColor Green
+        Write-Host "`n Analysis complete!" -ForegroundColor Green
         Write-Host ""
     }
     catch {
-        Write-Host "`n❌ Error: $_" -ForegroundColor Red
+        Write-Host "`n Error: $_" -ForegroundColor Red
         Write-Host $_.ScriptStackTrace -ForegroundColor Red
         exit 1
     }
