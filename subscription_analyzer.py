@@ -101,23 +101,27 @@ class GraphSubscriptionAnalyzer:
         Raises:
             Exception: If all retries are exhausted
         """
-        retry_count = 0
+        attempt = 0
         base_delay = 1  # Start with 1 second
         
-        while retry_count <= max_retries:
+        while attempt <= max_retries:
             try:
-                response = requests.get(url, headers=headers, params=params)
+                response = requests.get(url, headers=headers, params=params, timeout=30)
                 
                 # Success
                 if response.status_code == 200:
+                    if attempt > 0:
+                        print("Success!", end=" ")
                     return response
                 
                 # Throttling or service unavailable
                 if response.status_code in [429, 503]:
-                    retry_count += 1
+                    attempt += 1
                     
-                    if retry_count > max_retries:
-                        raise Exception(f"Max retries ({max_retries}) exceeded for {url}")
+                    if attempt > max_retries:
+                        print(f"\nMaximum retry attempts ({max_retries}) exceeded due to throttling.")
+                        print(f"Please try again later or reduce the request rate.")
+                        raise Exception(f"Failed after {max_retries} retry attempts due to API throttling (429/503)")
                     
                     # Get retry-after header (in seconds)
                     retry_after = response.headers.get('Retry-After')
@@ -128,31 +132,43 @@ class GraphSubscriptionAnalyzer:
                             wait_time = int(retry_after)
                         except ValueError:
                             # If it's a date, use exponential backoff instead
-                            wait_time = base_delay * (2 ** (retry_count - 1))
+                            wait_time = base_delay * (2 ** (attempt - 1))
                     else:
                         # Use exponential backoff: 1, 2, 4, 8, 16, 32, 64, 128 seconds
-                        wait_time = base_delay * (2 ** (retry_count - 1))
+                        wait_time = base_delay * (2 ** (attempt - 1))
                     
                     # Cap at 2 minutes
                     wait_time = min(wait_time, 120)
                     
-                    print(f"\n Throttled (429/503). Retry {retry_count}/{max_retries} after {wait_time}s...", end=" ")
+                    print(f"\nThrottled ({response.status_code}). Retry {attempt}/{max_retries} in {wait_time}s...", end=" ")
                     time.sleep(wait_time)
                     continue
                 
-                # Other errors - don't retry
+                # Other HTTP errors - don't retry, just return for caller to handle
                 return response
                 
-            except requests.exceptions.RequestException as e:
-                retry_count += 1
+            except requests.exceptions.Timeout:
+                attempt += 1
                 
-                if retry_count > max_retries:
-                    raise Exception(f"Network error after {max_retries} retries: {e}")
+                if attempt > max_retries:
+                    raise Exception(f"Request timeout after {max_retries} retry attempts")
                 
-                wait_time = base_delay * (2 ** (retry_count - 1))
+                wait_time = base_delay * (2 ** (attempt - 1))
                 wait_time = min(wait_time, 120)
                 
-                print(f"\n Network error. Retry {retry_count}/{max_retries} after {wait_time}s...", end=" ")
+                print(f"\nTimeout. Retry {attempt}/{max_retries} in {wait_time}s...", end=" ")
+                time.sleep(wait_time)
+                
+            except requests.exceptions.RequestException as e:
+                attempt += 1
+                
+                if attempt > max_retries:
+                    raise Exception(f"Network error after {max_retries} retries: {e}")
+                
+                wait_time = base_delay * (2 ** (attempt - 1))
+                wait_time = min(wait_time, 120)
+                
+                print(f"\nNetwork error. Retry {attempt}/{max_retries} in {wait_time}s...", end=" ")
                 time.sleep(wait_time)
         
         raise Exception(f"Request failed after {max_retries} retries")
