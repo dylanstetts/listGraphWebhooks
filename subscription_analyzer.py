@@ -77,7 +77,7 @@ class GraphSubscriptionAnalyzer:
         )
         
         if "access_token" in result:
-            print("✓ Authentication successful")
+            print(" Authentication successful")
             self.access_token = result['access_token']
             return self.access_token
         else:
@@ -207,7 +207,7 @@ class GraphSubscriptionAnalyzer:
             # Check for next page
             url = data.get('@odata.nextLink')
         
-        print(f"\n✓ Total subscriptions retrieved: {len(all_subscriptions)}")
+        print(f"\n Total subscriptions retrieved: {len(all_subscriptions)}")
         self.subscriptions = all_subscriptions
         return all_subscriptions
     
@@ -270,7 +270,7 @@ class GraphSubscriptionAnalyzer:
                'communications/onlineMeetings' in sub.get('resource', '')
         ]
         
-        print(f"\n✓ Found {len(transcript_subs)} callTranscript-related subscriptions")
+        print(f"\n Found {len(transcript_subs)} callTranscript-related subscriptions")
         return transcript_subs
     
     def generate_report(self, output_format: str = 'both', filter_transcripts: bool = False) -> Dict:

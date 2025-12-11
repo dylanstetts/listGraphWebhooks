@@ -169,7 +169,7 @@ function Get-AllSubscriptions {
         $url = $response.'@odata.nextLink'
     }
     
-    Write-Host "`n✓ Total subscriptions retrieved: $($allSubscriptions.Count)" -ForegroundColor Green
+    Write-Host "`n Total subscriptions retrieved: $($allSubscriptions.Count)" -ForegroundColor Green
     return $allSubscriptions
 }
 
@@ -364,7 +364,7 @@ function Save-JsonReport {
     
     try {
         $Report | ConvertTo-Json -Depth 10 | Out-File -FilePath $filepath -Encoding UTF8
-        Write-Host "`n✓ Report saved to: $filepath" -ForegroundColor Green
+        Write-Host "`n Report saved to: $filepath" -ForegroundColor Green
     }
     catch {
         Write-Warning "Failed to save JSON report: $_"
