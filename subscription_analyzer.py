@@ -5,6 +5,7 @@ Identifies which applications are creating subscriptions for Teams callTranscrip
 
 import os
 import json
+import time
 from typing import List, Dict, Optional
 from pathlib import Path
 from dotenv import load_dotenv
@@ -83,6 +84,79 @@ class GraphSubscriptionAnalyzer:
             error = result.get("error_description", result.get("error", "Unknown error"))
             raise Exception(f"Authentication failed: {error}")
     
+    def _make_graph_request_with_retry(self, url: str, headers: Dict, params: Optional[Dict] = None, max_retries: int = 8) -> requests.Response:
+        """
+        Make a Graph API request with exponential backoff retry logic.
+        Handles 429 (Too Many Requests) and 503 (Service Unavailable) errors.
+        
+        Args:
+            url: The URL to request
+            headers: Request headers
+            params: Optional query parameters
+            max_retries: Maximum number of retry attempts (default: 8)
+        
+        Returns:
+            Response object
+        
+        Raises:
+            Exception: If all retries are exhausted
+        """
+        retry_count = 0
+        base_delay = 1  # Start with 1 second
+        
+        while retry_count <= max_retries:
+            try:
+                response = requests.get(url, headers=headers, params=params)
+                
+                # Success
+                if response.status_code == 200:
+                    return response
+                
+                # Throttling or service unavailable
+                if response.status_code in [429, 503]:
+                    retry_count += 1
+                    
+                    if retry_count > max_retries:
+                        raise Exception(f"Max retries ({max_retries}) exceeded for {url}")
+                    
+                    # Get retry-after header (in seconds)
+                    retry_after = response.headers.get('Retry-After')
+                    
+                    if retry_after:
+                        # Retry-After can be in seconds or HTTP date format
+                        try:
+                            wait_time = int(retry_after)
+                        except ValueError:
+                            # If it's a date, use exponential backoff instead
+                            wait_time = base_delay * (2 ** (retry_count - 1))
+                    else:
+                        # Use exponential backoff: 1, 2, 4, 8, 16, 32, 64, 128 seconds
+                        wait_time = base_delay * (2 ** (retry_count - 1))
+                    
+                    # Cap at 2 minutes
+                    wait_time = min(wait_time, 120)
+                    
+                    print(f"\n Throttled (429/503). Retry {retry_count}/{max_retries} after {wait_time}s...", end=" ")
+                    time.sleep(wait_time)
+                    continue
+                
+                # Other errors - don't retry
+                return response
+                
+            except requests.exceptions.RequestException as e:
+                retry_count += 1
+                
+                if retry_count > max_retries:
+                    raise Exception(f"Network error after {max_retries} retries: {e}")
+                
+                wait_time = base_delay * (2 ** (retry_count - 1))
+                wait_time = min(wait_time, 120)
+                
+                print(f"\n Network error. Retry {retry_count}/{max_retries} after {wait_time}s...", end=" ")
+                time.sleep(wait_time)
+        
+        raise Exception(f"Request failed after {max_retries} retries")
+    
     def get_all_subscriptions(self) -> List[Dict]:
         """
         Retrieve all subscriptions using pagination.
@@ -139,7 +213,7 @@ class GraphSubscriptionAnalyzer:
         params = {'$filter': f"appId eq '{app_id}'", '$select': 'displayName,appId,id'}
         
         try:
-            response = requests.get(url, headers=headers, params=params)
+            response = self._make_graph_request_with_retry(url, headers, params)
             
             if response.status_code == 200:
                 data = response.json()
@@ -317,7 +391,7 @@ def main():
         print("\n✓ Analysis complete!")
         
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\n Error: {e}")
         import traceback
         traceback.print_exc()
         return 1
